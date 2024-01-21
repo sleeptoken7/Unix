@@ -1,0 +1,194 @@
+-to implement the cat command using general file API’s...............
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
+        printf("Usage: %s <filename>\n", argv[0]);
+        return 1;
+    }
+    int fd, i;
+    char buf[2];
+    fd = open(argv[1], O_RDONLY);
+    if (fd == -1)
+    {
+        perror("Error opening file");
+        return 1;
+}
+    else
+    {
+        while ((i = read(fd, buf, 1)) > 0)
+        {
+            printf("%c", buf[0]);
+        }
+        close(fd);
+    }
+   return 0;
+}
+
+-to implement the ln/rename command using general file API’s...........
+#include <stdio.h>
+#include <unistd.h>
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        printf("Usage: %s <src_file> <dest_file>\n", argv[0]);
+        return 0;
+    }
+    if (link(argv[1], argv[2]) == -1) {
+        perror("Link error");
+        return 1;
+    }
+    printf("Files linked\n");
+    printf("Inode number of linked files\n");
+    char str[100];
+    sprintf(str, "ls -i %s %s \n", argv[1], argv[2]);
+    system(str);
+    return 0;
+}
+
+-to duplicate the file .......
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+int main(int argc, char **argv) {
+    int fd, nfd;
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s pathname\n", argv[0]);
+        exit(1);
+    }
+    if ((fd = open(argv[1], O_WRONLY)) < 0) {
+        perror("Problem in opening the file");
+        exit(1);
+    }
+    if ((nfd = fcntl(fd, F_DUPFD, 0)) == -1) {
+        perror("Problem in duplicating fd");
+        exit(1);
+    }
+    printf("Fd %d duplicated with %d\n", fd, nfd);
+    close(fd);
+    close(nfd);
+    return 0;
+}
+
+-query and display the different attributes ....
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <stdlib.h>
+int main(int argc, char *argv[]) {
+    struct stat sb;
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s <pathname>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+    if (stat(argv[1], &sb) == -1) {
+        perror("stat");
+        exit(EXIT_FAILURE);
+    }
+    printf("file type:          ");
+    switch (sb.st_mode & S_IFMT) {
+        case S_IFBLK: printf("block device file\n"); break;
+        case S_IFCHR: printf("character device file\n"); break;
+        case S_IFDIR: printf("directory\n"); break;
+        case S_IFIFO: printf("FIFO/pipe\n"); break;
+        case S_IFLNK: printf("symlink\n"); break;
+        case S_IFREG: printf("regular file\n"); break;
+        case S_IFSOCK: printf("socket\n"); break;
+        default: printf("unknown file type\n"); break;
+    }
+    printf("Inode number:       %ld\n", (long)sb.st_ino);
+    printf("Mode:               %lo (octal)\n", (unsigned long)sb.st_mode & 0777);  // Mask out file type bits
+    printf("Blocks allocated:   %lld\n", (long long)sb.st_blocks);
+    exit(EXIT_SUCCESS);
+}
+
+-display the last 10 character’s ...
+#include<stdio.h>
+#include<stdlib.h>
+int main() {
+    FILE *fp;
+    char ch;
+    int num;
+    long length;
+    printf("Enter the value of num: ");
+    scanf("%d", &num);
+    fp = fopen("file.txt", "r");
+    if (fp == NULL) {
+        puts("Cannot open this file");
+        exit(1);
+    }
+    fseek(fp, 0, SEEK_END); 
+    length = ftell(fp);    
+    fseek(fp, -num, SEEK_END);
+    do {
+        ch = fgetc(fp);
+        if (ch != EOF) {
+            putchar(ch);
+        }
+    } while (ch != EOF);
+    fclose(fp);
+    return 0;
+}
+
+-masking of read/write/execute permission
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+int main()
+{
+    mode_t oldMask, newMask;
+    oldMask = umask((mode_t)0);
+    printf("\nOld mask = %o", (int)oldMask);
+    if (oldMask & S_IRGRP)
+    {
+        printf("\nChanging group read permission from Masked to unmasked.\n");
+        oldMask = (oldMask ^ S_IRGRP);
+    }
+    newMask = (oldMask | S_IWGRP | S_IXGRP);
+    umask(newMask);
+    printf("\nNew Mask = %o", (int)newMask);
+    printf("\nThe file mode creation mask now specifies:");
+    printf("\n  Group read permission  UNMASKED");
+    printf("\n  Group write permission  MASKED");
+    printf("\n  Group execute permission  MASKED");
+    oldMask = umask((mode_t)0);
+    printf("\nOld mask = %o", (int)oldMask);
+    if (oldMask & S_IRUSR)
+    {
+        printf("\nChanging user read permission from Masked to unmasked.\n");
+        oldMask = (oldMask ^ S_IRUSR);
+    }
+    newMask = (oldMask | S_IWUSR | S_IXUSR);
+    umask(newMask);
+    printf("\nNew Mask = %o", (int)newMask);
+    printf("\nThe file mode creation mask now specifies:");
+    printf("\n  User read permission  UNMASKED\n");
+    printf("\n  User write permission  MASKED\n");
+    printf("\n  User execute permission  MASKED\n");
+    oldMask = umask((mode_t)0);
+    printf("\nOld mask = %o", (int)oldMask);
+    if (oldMask & S_IROTH)
+    {
+        printf("\nChanging Other read permission from Masked to unmasked.\n");
+        oldMask = (oldMask ^ S_IROTH);
+    }
+    newMask = (oldMask | S_IWOTH | S_IXOTH);
+    umask(newMask);
+    printf("\nNew Mask = %o", (int)newMask);
+    printf("\nThe file mode creation mask now specifies:");
+    printf("\n  Other read permission  UNMASKED");
+    printf("\n  Other write permission  MASKED");
+    printf("\n  Other execute permission  MASKED\n");
+    return 0;
+}
+
+
+
