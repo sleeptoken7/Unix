@@ -1,0 +1,548 @@
+;;-infix to prefix…….
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX_EXPR_SIZE 100
+int precedence(char operator) {
+    switch (operator) {
+    case '+':
+    case '-':
+        return 1;
+    case '*':
+    case '/':
+        return 2;
+    case '^':
+        return 3;
+    default:
+        return -1;
+    }
+}
+int isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+char* infixToPostfix(char* infix) {
+    int i, j;
+    int len = strlen(infix);
+    char* postfix = (char*)malloc(sizeof(char) * (len + 2));
+    char stack[MAX_EXPR_SIZE];
+    int top = -1;
+    for (i = 0, j = 0; i < len; i++) {
+        if (infix[i] == ' ' || infix[i] == '\t')
+            continue;
+        if (isalnum(infix[i])) {
+            postfix[j++] = infix[i];
+        }
+        // If the scanned character is '(', push it to the stack
+        else if (infix[i] == '(') {
+            stack[++top] = infix[i];
+        }
+        // If the scanned character is ')', pop the stack and add it to the output string until '(' is found
+        else if (infix[i] == ')') {
+            while (top > -1 && stack[top] != '(')
+                postfix[j++] = stack[top--];
+            top--;
+        }
+ // If the scanned character is an operator, push it to the stack
+        else if (isOperator(infix[i])) {
+            while (top > -1 && precedence(stack[top]) >= precedence(infix[i]))
+                postfix[j++] = stack[top--];
+            stack[++top] = infix[i];
+        }
+    }
+
+    // Pop all remaining elements from the stack
+    while (top > -1) {
+        if (stack[top] == '(') {
+            return "Invalid Expression";
+        }
+        postfix[j++] = stack[top--];
+    }
+    postfix[j] = '\0';
+    return postfix;
+}
+
+// Driver code
+int main() {
+    char infix[MAX_EXPR_SIZE] = "a+b*(c^d-e)^(f+g*h)-i";
+
+    // Function call
+    char* postfix = infixToPostfix(infix);
+    printf("%s\n", postfix);
+    free(postfix);
+    return 0;
+}
+
+-Binary search
+#include <stdio.h>
+int recursiveBinarySearch(int array[], int start_index, int end_index, int element){
+   if (end_index >= start_index){
+      int middle = start_index + (end_index - start_index )/2;
+      if (array[middle] == element)
+         return middle;
+      if (array[middle] > element)
+         return recursiveBinarySearch(array, start_index, middle-1, element);
+      return recursiveBinarySearch(array, middle+1, end_index, element);
+   }
+   return -1;
+}
+int main(void){
+   int array[] = {1, 4, 7, 9, 16, 56, 70};
+   int n = 7;
+   int element = 9;
+   int found_index = recursiveBinarySearch(array, 0, n-1, element);
+   if(found_index == -1 ) {
+      printf("Element not found in the array ");
+   }
+   else {
+      printf("Element found at index : %d",found_index);
+   }
+   return 0;
+}
+
+
+-STACK
+#include<stdio.h>
+#define MAX_SIZE 100
+int stack[MAX_SIZE], choice, n, top, x, i;
+void push() {
+    if(top >= n - 1) {
+        printf("\n\tSTACK is over flow");
+    } else {
+        printf(" Enter a value to be pushed:");
+        scanf("%d", &x);
+        top++;
+        stack[top] = x;
+    }
+}
+void pop() {
+    if(top <= -1) {
+        printf("\n\t Stack is under flow");
+    } else {
+        printf("\n\t The popped elements is %d", stack[top]);
+        top--;
+    }
+}
+// Function to display the stack
+void display() {
+    if(top >= 0) {
+        printf("\n The elements in STACK \n");
+        for(i = top; i >= 0; i--)
+            printf("\n%d", stack[i]);
+        printf("\n Press Next Choice");
+    } else {
+        printf("\n The STACK is empty");
+    }
+}
+int main() {
+    top = -1;
+    printf("\n Enter the size of STACK[MAX=100]:");
+    scanf("%d", &n);
+    printf("\n\t STACK OPERATIONS USING ARRAY");
+    printf("\n\t 1.PUSH\n\t 2.POP\n\t 3.DISPLAY\n\t 4.EXIT");
+    do {
+        printf("\n Enter the Choice:");
+        scanf("%d", &choice);
+        switch(choice) {
+            case 1: {
+                push();
+                break;
+            }
+            case 2: {
+                pop();
+                break;
+            }
+            case 3: {
+                display();
+                break;
+            }
+            case 4: {
+                printf("\n\t EXIT POINT ");
+                break;
+            }
+            default: {
+                printf ("\n\t Please Enter a Valid Choice(1/2/3/4)");
+            }
+        }
+    } while(choice != 4);
+    return 0;
+}
+
+-FACTORIAL
+    #include<stdio.h>  
+    int main()    
+    {    
+     int i,fact=1,number;    
+     printf("Enter a number: ");    
+      scanf("%d",&number);    
+        for(i=1;i<=number;i++){    
+          fact=fact*i;    
+   }    
+      printf("Factorial of %d is: %d",number,fact);    
+    return 0;  
+    }   
+
+-TOH
+#include <stdio.h>  
+void towerOfHanoi(int n, char from_rod, char to_rod, char aux_rod)
+{
+    if (n == 1)
+    {
+        printf("\n Move disk 1 from rod %c to rod %c", from_rod, to_rod);
+        return;
+    }
+    towerOfHanoi(n-1, from_rod, aux_rod, to_rod);
+    printf("\n Move disk %d from rod %c to rod %c", n, from_rod, to_rod);
+    towerOfHanoi(n-1, aux_rod, to_rod, from_rod);
+}
+int main()
+{
+    int n = 4; 
+    towerOfHanoi(n, 'A', 'C', 'B');  
+    return 0;
+}
+
+-ORDINARY QUEUE
+#include <stdio.h>
+#define SIZE 5
+int items[SIZE];
+int front = -1, rear =-1;
+int isFull(){
+    if((front == rear + 1) || (front == 0 && rear == SIZE-1)) return 1;
+    return 0;
+}
+int isEmpty(){
+    if(front == -1) return 1;
+    return 0;
+}
+void enQueue(int element){
+    if(isFull()) printf("\n Queue is full!! \n");
+    else{
+        if(front == -1) front = 0;
+        rear = (rear + 1) % SIZE;
+        items[rear] = element;
+        printf("\n Inserted -> %d", element);
+    }
+}
+int deQueue(){
+    int element;
+    if(isEmpty()){
+        printf("\n Queue is empty !! \n");
+        return(-1);
+    } else {
+        element = items[front];
+        if (front == rear){
+            front = -1;
+            rear = -1;
+        } 
+        else {
+            front = (front + 1) % SIZE;
+        }
+        printf("\n Deleted element -> %d \n", element);
+        return(element);
+    }
+}
+void display(){
+    int i;
+    if(isEmpty()) printf(" \n Empty Queue\n");
+    else{
+        printf("\n Front -> %d ", front);
+        printf("\n Items -> ");
+        for( i = front; i!=rear; i=(i+1)%SIZE) {
+            printf("%d ",items[i]);
+        }
+        printf("%d ",items[i]);
+        printf("\n Rear -> %d \n", rear);
+    }
+}
+int main(){
+    // Fails because front = -1
+    deQueue();
+    
+    enQueue(1);
+    enQueue(2);
+    enQueue(3);
+    enQueue(4);
+    enQueue(5);
+    
+    // Fails to enqueue because front == 0 && rear == SIZE - 1
+    enQueue(6);
+  display();
+    deQueue();
+    
+    display();
+    
+    enQueue(7);
+    display();
+    
+    // Fails to enqueue because front == rear + 1
+    enQueue(8);
+    
+    return 0;
+}
+
+-CIRCULAR QUEUE
+#include <stdio.h>
+#define SIZE 5
+
+int items[SIZE];
+int front = -1, rear =-1;
+
+int isFull(){
+    if((front == rear + 1) || (front == 0 && rear == SIZE-1)) return 1;
+    return 0;
+}
+
+int isEmpty(){
+    if(front == -1) return 1;
+    return 0;
+}
+
+void enQueue(int element){
+    if(isFull()) printf("\n Queue is full!! \n");
+    else{
+        if(front == -1) front = 0;
+        rear = (rear + 1) % SIZE;
+        items[rear] = element;
+        printf("\n Inserted -> %d", element);
+    }
+}
+
+int deQueue(){
+    int element;
+    if(isEmpty()){
+printf("\n Queue is empty !! \n");
+        return(-1);
+    } else {
+        element = items[front];
+        if (front == rear){
+            front = -1;
+            rear = -1;
+        } 
+        else {
+            front = (front + 1) % SIZE;
+        }
+        printf("\n Deleted element -> %d \n", element);
+        return(element);
+    }
+}
+
+void display(){
+    int i;
+    if(isEmpty()) printf(" \n Empty Queue\n");
+    else{
+        printf("\n Front -> %d ", front);
+        printf("\n Items -> ");
+        for( i = front; i!=rear; i=(i+1)%SIZE) {
+            printf("%d ",items[i]);
+        }
+        printf("%d ",items[i]);
+        printf("\n Rear -> %d \n", rear);
+    }
+}
+
+int main(){
+    // Fails because front = -1
+    deQueue();
+    
+    enQueue(1);
+    enQueue(2);
+    enQueue(3);
+    enQueue(4);
+    enQueue(5);
+    
+    // Fails to enqueue because front == 0 && rear == SIZE - 1
+    enQueue(6);
+    
+    display();
+    deQueue();
+display();
+    
+    enQueue(7);
+    display();
+    
+    // Fails to enqueue because front == rear + 1
+    enQueue(8);
+    
+    return 0;
+}
+
+-SINGLE LINKED LIST
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Node structure
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    if(newNode == NULL) {
+        printf("Error creating a new node.\n");
+        exit(0);
+    }
+    newNode->data = data;
+    newNode->next = NULL;
+
+    return newNode;
+}
+
+// Function to add a node at the end of the list
+Node* addNode(Node* head, int data) {
+    Node* newNode = createNode(data);
+    if(head == NULL){
+        head = newNode;
+    } else {
+        Node* temp = head;
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+      temp->next = newNode;
+    }
+
+    return head;
+}
+
+// Function to print the list
+void printList(Node* head) {
+    Node* temp = head;
+    while(temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    Node* head = NULL; // Start with an empty list
+    head = addNode(head, 10); // Add nodes to the list
+    head = addNode(head, 20);
+    head = addNode(head, 30);
+
+    printList(head); // Print the list
+
+    return 0;
+}
+
+-DOUBLY LINKED LIST
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Node structure
+typedef struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    if(newNode == NULL) {
+        printf("Error creating a new node.\n");
+        exit(0);
+    }
+newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+
+    return newNode;
+}
+
+// Function to add a node at the end of the list
+Node* addNode(Node* head, int data) {
+    Node* newNode = createNode(data);
+    if(head == NULL){
+        head = newNode;
+    } else {
+        Node* temp = head;
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->prev = temp;
+    }
+
+    return head;
+}
+
+// Function to print the list
+void printList(Node* head) {
+    Node* temp = head;
+    while(temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    Node* head = NULL; // Start with an empty list
+    head = addNode(head, 10); // Add nodes to the list
+    head = addNode(head, 20);
+    head = addNode(head, 30);
+
+    printList(head); // Print the list
+
+    return 0;
+}
+-BINARYTREE
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Node structure
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    if(newNode == NULL) {
+        printf("Error creating a new node.\n");
+        exit(0);
+    }
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+
+    return newNode;
+}
+
+// Function to insert a node in the tree
+Node* insertNode(Node* root, int data) {
+    if(root == NULL) {
+        root = createNode(data);
+    } else if(data < root->data) {
+        root->left = insertNode(root->left, data);
+    } else {
+        root->right = insertNode(root->right, data);
+    }
+
+    return root;
+}
+
+// Function to print the tree in-order
+void printTree(Node* root) {
+    if(root != NULL) {
+        printTree(root->left);
+        printf("%d ", root->data);
+        printTree(root->right);
+    }
+}
+int main() {
+    Node* root = NULL; // Start with an empty tree
+    root = insertNode(root, 10); // Insert nodes in the tree
+    root = insertNode(root, 20);
+    root = insertNode(root, 30);
+    root = insertNode(root, 5);
+    root = insertNode(root, 15);
+
+    printTree(root); // Print the tree in-order
+    return 0;
+}
