@@ -1,0 +1,64 @@
+// 1- #!/bin/sh
+a=2 b=4 c=3
+val=`expr $a + $b`
+echo "Sum = $val"
+val=`expr $a - $b`
+echo "Difference= $val"
+val=`expr $a \* $b`
+echo "Product = $val"
+val=`expr $b / $a`
+echo "quotient = $val"
+val=`expr $a % $b`
+echo "Modulus = $val"
+if [ $a -eq $b ]
+then
+echo "a is equal to b"
+else
+echo "a is not equal to b"
+fi
+if [ $a != $b ]
+then
+echo "a is not equal to b"
+else
+echo "a is equal to b"
+fi
+if [ $a -lt 10 -o $b -gt 20 ]   
+then
+echo "true"
+else
+echo "false"
+fi
+if [ $a -lt 10 -a $b -gt 20 ]   
+then
+echo "True"
+else
+echo "False"
+fi
+//2- 
+#!/bin/sh
+file="filename.sh" 
+if [ -r $file ] 
+then 
+echo "File has read permission"
+else
+echo "File does not have read permission"
+fi
+-w-x-f-d-s-e-b-c
+//3-
+#!/bin/sh
+ps
+echo "ps : process status"
+ps -f
+echo "ps -f : full listing"
+ps -l
+echo "ps -l : along listing showing memory related information"
+ps- u,e,a,t
+//3-   #!/bin/awk  -f
+BEGIN {print "START"}
+{print $1, "\t", $3}
+END {print "DONE"}
+//4- 
+#!/bin/sh
+echo “User logged in:”
+users , data, who , whoami 
+
